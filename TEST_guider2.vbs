@@ -17,8 +17,8 @@ oag.GuiderAutoSelectStar = True
 oag.GuiderExpose(3)
 
 Do While oag.GuiderMoving = True
-    Loop
-End While
+Loop
+'If we can find a way to make this loop to free up cpu usage thatd be great
 
 'If guide star was found, the coordinates should be bigger than 0
 x = oag.GuiderXStarPosition
