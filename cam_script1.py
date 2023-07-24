@@ -8,12 +8,10 @@ cam.LinkEnabled = True
 # Check if the camera link is enabled
 if cam.LinkEnabled == False:
     print('Camera 1 Failed to Start')
-    quit()
 elif cam.LinkEnabled == True:
     print('Camera 1 Connected, exposing...')
 else:
     print('Unknown Error')
-    quit()
 
 #Exposing the Camera for 1 second
 cam.Expose(1, 1, 0)

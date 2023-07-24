@@ -6,7 +6,6 @@ oag.LinkEnabled = True
 if Not oag.LinkEnabled then
     wscript.echo "Failed to start guider, quitting..."
     oag.Quit()
-    Close()
 End if
 
 wscript.echo "Guider Connected, looking for guide star"
@@ -18,7 +17,6 @@ oag.GuiderExpose(3)
 
 Do While oag.GuiderMoving = True
 Loop
-'If we can find a way to make this loop to free up cpu usage thatd be great
 
 'If guide star was found, the coordinates should be bigger than 0
 x = oag.GuiderXStarPosition
@@ -29,6 +27,6 @@ wscript.echo y
 
 'Shutdown Procedure
 oag.Quit()
-Close()
 
+wscript.echo "hello"
 ' Test Script for Guider #2, next is to test calibration
