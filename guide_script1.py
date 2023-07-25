@@ -2,8 +2,9 @@ import time
 import comtypes.client
 
 #create com object and connect
+cam = comtypes.client.CreateObject("MaxIm.CCDCamera")
 oag = comtypes.client.CreateObject("MaxIm.CCDCamera")
-oag.LinkEnabled
+oag.LinkEnabled = True
 
 #check link is enabled
 if oag.LinkEnabled == True:
@@ -15,7 +16,7 @@ else:
     quit()
 
 #exposing the guider for 3 seconds
-oag.GuiderExpose(5)
+oag.GuiderExpose(3)
 
 #wait for the exposure to finish
 while oag.GuiderRunning == True:
