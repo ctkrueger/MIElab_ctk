@@ -21,7 +21,8 @@ while cam.ImageReady == False:
     time.sleep(0.1) # save cpu whilst image prapres for download
 
 #image saving
-cam.SaveImage("File path ending in file name")
+# the r before the string makes it a raw string, couldn't save image w/o that
+cam.SaveImage(r"C:\Users\NUC\OneDrive\Documents\MaxIm DL 6\image.fit")
 
 #shut down procedure
 cam.Quit()

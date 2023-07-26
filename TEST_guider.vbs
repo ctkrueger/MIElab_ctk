@@ -17,7 +17,7 @@ wscript.echo "Guider connected, exposing"
 
 oag.GuiderExpose 5
 
-Do While oag.GuiderMoving
+Do While oag.GuiderRunning
 Loop
 
 wscript.echo "Guider Exposure Complete"

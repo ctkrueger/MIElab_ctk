@@ -1,8 +1,8 @@
 import time
 import comtypes.client
+import subprocess
 
 #create com object and connect
-cam = comtypes.client.CreateObject("MaxIm.CCDCamera")
 oag = comtypes.client.CreateObject("MaxIm.CCDCamera")
 oag.LinkEnabled = True
 
@@ -16,7 +16,7 @@ else:
     quit()
 
 #exposing the guider for 3 seconds
-oag.GuiderExpose(3)
+subprocess.call("wscript GuiderExpose.vbs")
 
 #wait for the exposure to finish
 while oag.GuiderRunning == True:

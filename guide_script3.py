@@ -11,7 +11,9 @@ if oag.LinkEnabled != True:
     oag.Quit()
     quit()
 
+print('Debug checkpoint: line before guidercalstate')    
 calibration = oag.GuiderCalState
+print(f'CalState: {calibration}')
 if calibration != 0:
     if oag.GuiderRunning == False:
         print('unknown error raised')
@@ -21,14 +23,18 @@ if calibration != 0:
 else:
     print('Guider ready to calibrate')
 
+
+print('Debug checkpoint: line before guidercalibrate')
 #calibrate (or at least attempt to)
 oag.GuiderCalibrate(3) # 3 second exposures
 
-while oag.GuiderRunning == True:
-    time.sleep(0.1)
+time.sleep(10)
+#while oag.GuiderRunning == True:
+#    time.sleep(0.1)
 
 calibrate_new = oag.GuiderCalState
-if calibrate_new >= 1:
+print(f'CalStateNew: {calibrate_new}')
+if calibrate_new <= 1:
     print('No calibration procedure finished... wait')
     time.sleep(0.2)
 else:

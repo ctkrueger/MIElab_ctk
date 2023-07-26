@@ -22,7 +22,7 @@ ElseIf calibration = 1 Then
     Loop
 End If
 
-Do While oag.GuiderMoving = True
+Do While oag.GuiderRunning = True
 Loop
 
 wscript.echo "New Calibration code: " & oag.GuiderCalState
