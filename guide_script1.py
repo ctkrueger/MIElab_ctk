@@ -15,8 +15,9 @@ else:
     print('unknown error raised, quitting...')
     quit()
 
+time.sleep(0.5) #rohan's magical fix to make GuiderExpose work
 #exposing the guider for 3 seconds
-subprocess.call("wscript GuiderExpose.vbs")
+oag.GuiderExpose(5)
 
 #wait for the exposure to finish
 while oag.GuiderRunning == True:

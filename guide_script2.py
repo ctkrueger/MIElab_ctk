@@ -17,6 +17,7 @@ else:
     oag.Quit()
     quit()
 
+time.sleep(0.5) # rohan's magical fix to make GuiderExpose work
 #make sure guide star initializes automatically
 oag.GuiderAutoSelectStar = True
 #exposing for 3 seconds
