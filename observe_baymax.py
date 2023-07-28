@@ -23,10 +23,10 @@ while session == 1:
                     session = 1
                     continue
                 case "disconnect": #quits the camera object, unsure if quits both
-                    maxim_menu1.guider_disconnect()
+                    maxim_menu1.guider_disconnect(object)
                     session = 1
                     continue
-                case "expose": #takes a guider exposure, will change when add normal expose
+                case "guiderexpose": #takes a guider exposure, will change when add normal expose
                     duration = input('Duration in s?: ') #respond in float value
                     duration = float(duration)
                     maxim_menu1.guider_expose(duration, object)
@@ -35,17 +35,20 @@ while session == 1:
                 case "calibrate": #calibrates guider, dont think we'll have to add ccdcal
                     duration = input('Duration in s?: ') #respond in float value
                     duration = float(duration)
-                    maxim_menu1.guider_calibrate(duration)
+                    maxim_menu1.guider_calibrate(object, duration)
                     session = 1
                     continue
                 case "calstate": #returns the calibration code of the guider
-                    maxim_menu1.guider_calstate() # refer to manual for codes 
+                    maxim_menu1.guider_calstate(object) # refer to manual for codes 
                     session = 1
                     continue
                 case "guidestar": #returns coords of guide star in photo
-                    maxim_menu1.guidestar_coords()
+                    maxim_menu1.guidestar_coords(object)
                     session = 1
                     continue
+                case _: # when something is not entered correctly
+                    print('Unknown command')
+                    session = 1
         case "n": #check to make sure all cameras are warmed / disconnected
             check = input("make sure all devices disconnected? (y/n): ")
             match check:

@@ -21,13 +21,13 @@ def guider_connect():
     return object # has to return it so that it can be used by other commands
 
 # disconnects the MaxIm.CCDCamera object, will be renamed with implementation of Cam1 
-def guider_disconnect():
+def guider_disconnect(object):
     object.Quit()
     print("Guider disconnected")
     return # does not return an object because its been disconnected
 
 # just checks calcode, to be used on first startup only
-def guider_calstate():
+def guider_calstate(object):
     #check link
     if object.LinkEnabled != True:
         print('Guider not connected, check if plugged in')
@@ -36,10 +36,10 @@ def guider_calstate():
     else:
         calcode = object.GuiderCalState
         print(f'Guider calibration code: {calcode}')
-    return
+    return object
 
 #calibrates the guider by checking the calcode and then activating calibration
-def guider_calibrate(duration):
+def guider_calibrate(object, duration):
     #check link
     if object.LinkEnabled != True:
         print('Guider not connected, check if plugged in')
@@ -61,13 +61,13 @@ def guider_calibrate(duration):
             match calcode_new:
                 case 2:
                     print('Guider Calibrated Successfully')
-                    return
+                    return object
                 case 3:
                     print('Guider calibration failed')
-                    return
+                    return object
                 case _:
                     print('Unknown error raised')
-                    return
+                    return object
         case 1: # is calibrating, dont know why this would be raised
             print('Guider currently calibrating')
             while object.GuiderMoving == True or object.GuiderRunning == True:
@@ -78,22 +78,22 @@ def guider_calibrate(duration):
             match calcode_new:
                 case 2:
                     print('Guider Calibrated Successfully')
-                    return
+                    return object
                 case 3:
                     print('Guider calibration failed')
-                    return
+                    return object
                 case _:
                     print('Unknown error raised')
-                    return
+                    return object
         case 2: # already calibrated
             print('Guider Calibrated Successfully')
-            return
+            return object
         case 3: #tried to and failed
                     print('Guider calibration failed')
-                    return
+                    return object
         case _: # no code that can be interpreted, just a precaution
             print('Unknown error raised')
-            return
+            return object
 
 # take autoguider exposure, this is what locates guide stars
 def guider_expose(duration, object, auto_select = True):
@@ -131,12 +131,12 @@ def guider_expose(duration, object, auto_select = True):
         y = object.GuiderYStarPosition # y position in image
         time.sleep(0.5)
         print(f'Guide star coords: ({x},{y})')
-        return
+        return object
     else:
-        return
+        return object
 
 #just prints the guidestar coords in case one is curious
-def guidestar_coords():
+def guidestar_coords(object):
     #check link
     if object.LinkEnabled != True:
         print('Guider not connected, check if plugged in')
@@ -153,6 +153,6 @@ def guidestar_coords():
     y = object.GuiderYStarPosition # y position in image
     time.sleep(0.5)
     print(f'Guide star coords: ({x},{y})')
-    return
+    return object
 
 
