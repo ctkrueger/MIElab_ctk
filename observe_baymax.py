@@ -6,7 +6,10 @@
 import comtypes.client
 import maxim_menu1
 import time
-
+#all possible commands at this time
+options = ['connect', 'disconnect', 'guiderexpose', 'calibrate', 'calstate',\
+    'guidestar', 'track', 'guiderstop', 'status', 'camexpose', 'cooler', \
+    'temp', 'list']
 #session = 1 means the session with the menu is open;
 #when session = 0, the session closes and all of maxim dl will close
 session = 1
@@ -46,9 +49,44 @@ while session == 1:
                     maxim_menu1.guidestar_coords(object)
                     session = 1
                     continue
+                case "track": #tracks the currently selected guidestar
+                    duration = input('Duration in s?: ') # respond in float value
+                    duration = float(duration)
+                    maxim_menu1.guider_track(object, duration)
+                    session = 1
+                    continue
+                case "guiderstop": #stops guider tracking, returns cam to idle
+                    maxim_menu1.guider_stop(object)
+                    session = 1
+                    continue
+                case "status": #checks status of camera1, the ccd camera
+                    maxim_menu1.cam_status(object)
+                    session = 1
+                    continue
+                case "camexpose": #take light exposure with main ccd camera
+                    duration = input('Duration in s?: ') #respond in float value
+                    duration = float(duration)
+                    maxim_menu1.cam_expose(object, duration)
+                    session = 1
+                    continue
+                case "cooler": #controls the temperatures of the cooler
+                    setpoint = input('Temp to be set to?: ')
+                    setpoint = float(setpoint)
+                    maxim_menu1.cam_cooler(object, setpoint)
+                    session = 1
+                    continue
+                case "temp": #queries for temp of the ccd camera 
+                    maxim_menu1.cam_temp(object)
+                    session = 1
+                    continue
+                case "list": #lists all possible commands at the given moment
+                    print(options)
+                    session = 1
+                    continue
                 case _: # when something is not entered correctly
                     print('Unknown command')
                     session = 1
+                    continue
         case "n": #check to make sure all cameras are warmed / disconnected
             check = input("make sure all devices disconnected? (y/n): ")
             match check:

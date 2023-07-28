@@ -155,4 +155,131 @@ def guidestar_coords(object):
     print(f'Guide star coords: ({x},{y})')
     return object
 
+def guider_track(object, duration):
+    #check link
+    if object.LinkEnabled != True:
+        print('Guider not connected, check if plugged in')
+        object.Quit()
+        return
+    else:
+        pass
+    #check moving
+    while object.GuiderMoving == True or object.GuiderRunning == True:
+        time.sleep(1)
+        continue
+    
+    x = object.GuiderXStarPosition # x position in image
+    y = object.GuiderYStarPosition # y position in image
+    print('Beginning guidestar tracking')
+    print(f'Guidestar coords: ({x}, {y})')
+
+    object.GuiderTrack(duration)
+    #check moving
+    return object
+
+def guider_stop(object):
+    #check link
+    if object.LinkEnabled != True:
+        print('Guider not connected, check if plugged in')
+        object.Quit()
+        return
+    else:
+        pass
+    
+    if object.GuiderMoving == True or object.GuiderRunning == True:
+        print('Stopping guider exposure/tracking')
+        object.GuiderStop()
+        return object
+    else:
+        print('Guider idle, awaiting further commands')
+        return object
+
+def cam_status(object):
+    #check link
+    if object.LinkEnabled != True:
+        print('Guider not connected, check if plugged in')
+        object.Quit()
+        return
+    else:
+        pass
+    #check guider moving
+    while object.GuiderMoving == True or object.GuiderRunning == True:
+        time.sleep(1)
+        continue
+
+    #check camera 1 status if it applies to the situation
+    status = object.CameraStatus
+    print(f'Camera 1 Status Code: {status}')
+    return object
+
+
+def cam_expose(object, duration):
+    #check link
+    if object.LinkEnabled != True:
+        print('Guider not connected, check if plugged in')
+        object.Quit()
+        return
+    else:
+        pass
+    #check guider moving
+    while object.GuiderMoving == True or object.GuiderRunning == True:
+        time.sleep(1)
+        continue
+
+    object.Expose(duration, 1, 0)
+    
+    while object.ImageReady == False:
+        time.sleep(1)
+        continue
+
+    object.SaveImage('Enter file path for images here, ending with image.fit')
+    print('Exposure complete, image saved to file')
+    return object
+
+def cam_cooler(object, setpoint, set_temp = True):
+    #check link
+    if object.LinkEnabled != True:
+        print('Guider not connected, check if plugged in')
+        object.Quit()
+        return
+    else:
+        pass
+    #check guider moving
+    while object.GuiderMoving == True or object.GuiderRunning == True:
+        time.sleep(1)
+        continue
+
+    if set_temp == True:
+        object.CanSetTemperature = True
+        temp = setpoint
+    else:
+        temp = -20 # default
+    current = object.Temperature
+    print(f'Cooling CCD camera to {temp} degrees')
+    print(f'Current CCD cam temp is {current} degrees')
+    
+    object.CoolerOn = True
+    return object
+
+def cam_temp(object):
+    #check link
+    if object.LinkEnabled != True:
+        print('Guider not connected, check if plugged in')
+        object.Quit()
+        return
+    else:
+        pass
+    #check moving
+    while object.GuiderMoving == True or object.GuiderRunning == True:
+        time.sleep(1)
+        continue
+
+    current_temp = object.Temperature
+    print(f'Current CCD cam temp is {current_temp} degrees')
+    return object
+
+
+
+    
+
 
