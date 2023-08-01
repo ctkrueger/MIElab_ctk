@@ -232,11 +232,12 @@ def cam_expose(object, duration):
         time.sleep(1)
         continue
 
-    object.SaveImage('Enter file path for images here, ending with image.fit')
+    image = comtypes.client.CreateObject("MaxIm.Document")
+    #object.SaveImage('Enter file path for images here, ending with image.fit')
     print('Exposure complete, image saved to file')
-    return object
+    return object, image
 
-def cam_cooler(object, setpoint, set_temp = True):
+def cam_cooler(object):
     #check link
     if object.LinkEnabled != True:
         print('Guider not connected, check if plugged in')
@@ -248,17 +249,14 @@ def cam_cooler(object, setpoint, set_temp = True):
     while object.GuiderMoving == True or object.GuiderRunning == True:
         time.sleep(1)
         continue
-
-    if set_temp == True:
-        object.CanSetTemperature = True
-        temp = setpoint
-    else:
-        temp = -20 # default
-    current = object.Temperature
-    print(f'Cooling CCD camera to {temp} degrees')
-    print(f'Current CCD cam temp is {current} degrees')
-    
+    #default setpoint
+    object.TemperatureSetpoint = -20
     object.CoolerOn = True
+    time.sleep(0.5) # this might work like rohan's trick for quiderexpose
+    print(f'Cooling CCD camera to -20 degrees')
+    time.sleep(0.5) # just to be safe
+    print(f'Current CCD cam temp is {object.Temperature} degrees')
+    
     return object
 
 def cam_temp(object):
@@ -277,6 +275,48 @@ def cam_temp(object):
     current_temp = object.Temperature
     print(f'Current CCD cam temp is {current_temp} degrees')
     return object
+
+def warm(object, setpoint):
+    #check link
+    if object.LinkEnabled != True:
+        print('Guider not connected, check if plugged in')
+        object.Quit()
+        return
+    else:
+        pass
+    #check moving
+    while object.GuiderMoving == True or object.GuiderRunning == True:
+        time.sleep(1)
+        continue
+
+    print(f'Warming CCD Camera to {setpoint} degrees, do not disconnect')
+    object.TemperatureSetpoint = setpoint
+    while object.Temperature <= (object.TemperatureSetpoint - 1): # to prevent exponential decay of warming as it approaches
+        time.sleep(2)  
+        print(f'Current CCD cam temp is {object.Temperature} degrees')
+        continue
+
+    print(f'Camera warmed to {object.temperature}, turning cooler off')
+    object.CoolerOn = False
+
+    return object
+
+def deconvolve(object, image):
+    #check link
+    if object.LinkEnabled != True:
+        print('Guider not connected, check if plugged in')
+        object.Quit()
+        return
+    else:
+        pass
+    #check moving
+    while object.GuiderMoving == True or object.GuiderRunning == True:
+        time.sleep(1)
+        continue
+    image.Deconvolve(1)
+    return image, object
+
+
 
 
 

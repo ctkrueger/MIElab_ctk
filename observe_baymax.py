@@ -9,7 +9,7 @@ import time
 #all possible commands at this time
 options = ['connect', 'disconnect', 'guiderexpose', 'calibrate', 'calstate',\
     'guidestar', 'track', 'guiderstop', 'status', 'camexpose', 'cooler', \
-    'temp', 'list']
+    'temp', 'warm', 'list']
 #session = 1 means the session with the menu is open;
 #when session = 0, the session closes and all of maxim dl will close
 session = 1
@@ -70,9 +70,7 @@ while session == 1:
                     session = 1
                     continue
                 case "cooler": #controls the temperatures of the cooler
-                    setpoint = input('Temp to be set to?: ')
-                    setpoint = float(setpoint)
-                    maxim_menu1.cam_cooler(object, setpoint)
+                    maxim_menu1.cam_cooler(object)
                     session = 1
                     continue
                 case "temp": #queries for temp of the ccd camera 
@@ -81,6 +79,13 @@ while session == 1:
                     continue
                 case "list": #lists all possible commands at the given moment
                     print(options)
+                    session = 1
+                    continue
+                case "warm": #doesnt actually turn on warm up (dont know how)
+                    #instead this just turns the cooler off\
+                    setpoint = input('What temp to warm to?:(as float)')
+                    setpoint = float(setpoint)
+                    maxim_menu1.warm(object, setpoint)
                     session = 1
                     continue
                 case _: # when something is not entered correctly
