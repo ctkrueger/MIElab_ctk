@@ -234,8 +234,8 @@ def cam_expose(object, duration):
 
     image = comtypes.client.CreateObject("MaxIm.Document")
     #object.SaveImage('Enter file path for images here, ending with image.fit')
-    print('Exposure complete, image saved to file')
-    return object, image
+    print('Exposure complete, image file open to get statistics')
+    return image, object
 
 def cam_cooler(object):
     #check link
@@ -313,7 +313,18 @@ def deconvolve(object, image):
     while object.GuiderMoving == True or object.GuiderRunning == True:
         time.sleep(1)
         continue
-    image.Deconvolve(1)
+    image.Deconvolve(2)
+    print('checkpoint 1')
+    time.sleep(0.5)
+    image.SetPSF(2)
+    print('checkpoint 2')
+    time.sleep(0.5)
+    image.Deconvolve(0)
+    while image.IterationComplete == False:
+        time.sleep(2)
+        continue
+    print('Checkpoint 3')
+    image.Deconvolve(99)
     return image, object
 
 

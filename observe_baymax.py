@@ -9,11 +9,12 @@ import time
 #all possible commands at this time
 options = ['connect', 'disconnect', 'guiderexpose', 'calibrate', 'calstate',\
     'guidestar', 'track', 'guiderstop', 'status', 'camexpose', 'cooler', \
-    'temp', 'warm', 'list']
+    'temp', 'warm', 'deconvolve', 'list']
 #session = 1 means the session with the menu is open;
 #when session = 0, the session closes and all of maxim dl will close
 session = 1
 object = None
+image = None
 while session == 1:
     command_bool = input('Operate Command? (y/n)') #will prompt about camera connection also
     match command_bool:
@@ -66,7 +67,7 @@ while session == 1:
                 case "camexpose": #take light exposure with main ccd camera
                     duration = input('Duration in s?: ') #respond in float value
                     duration = float(duration)
-                    maxim_menu1.cam_expose(object, duration)
+                    image, object = maxim_menu1.cam_expose(object, duration)
                     session = 1
                     continue
                 case "cooler": #controls the temperatures of the cooler
@@ -86,6 +87,14 @@ while session == 1:
                     setpoint = input('What temp to warm to?:(as float)')
                     setpoint = float(setpoint)
                     maxim_menu1.warm(object, setpoint)
+                    session = 1
+                    continue
+                case "deconvolve":
+                    maxim_menu1.deconvolve(object, image)
+                    session = 1
+                    continue
+                case "save":
+                    maxim_menu1.save_image(image)
                     session = 1
                     continue
                 case _: # when something is not entered correctly
