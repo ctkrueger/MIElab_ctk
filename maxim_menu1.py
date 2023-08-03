@@ -351,10 +351,34 @@ def deconvolve(image, gain, method = 'rl'):
     #saving the new image will have to be a new menu item
     return image
 
+def save_img(image, file_name):
+    #folder where the images will be stored
+    path_str = r'c:\Users\NUC\OneDrive\Documents\SavedFITS'
+    #name of the image file, will only allow .fits and .fit because necessity only
+    file_name = str(file_name)
 
+    if file_name[-3:] == 'fit' or file_name[-4:] == 'fits':
+        file_path = path_str + file_name
+        image.SaveFile(file_path, 3, False)
+        time.sleep(0.5) #just to make sure everything has time to execute
+        image.Close()
+    else: #check condition to make sure it can be saved
+        print('incorrect file type, should end with .fits or .fit')
+    return
 
+def open_file(file_path):
+    #make sure string
+    file_path = str(file_path)
 
+    #make sure its a file that can be opened
+    #again will only be .fit and .fits for necessity purposes
+    if file_path[-3:] != 'fit' and file_path[-4:] != 'fits':
+        print('Incorrect file path, needs to be a fits file from a known directory')
+        return
+    else:
+        pass
+    image = comtypes.client.CreateObject("MaxIm.Document")
+    image.OpenFile(file_path)
 
-    
-
+    return image
 
