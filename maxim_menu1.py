@@ -301,31 +301,55 @@ def warm(object, setpoint):
 
     return object
 
-def deconvolve(object, image):
-    #check link
-    if object.LinkEnabled != True:
-        print('Guider not connected, check if plugged in')
-        object.Quit()
-        return
+def deconvolve(image, gain, method = 'rl'):
+    method_code = None
+    if method == 'rl':
+        method_code = 2
+    elif method == 'me':
+        method_code = 1
     else:
-        pass
-    #check moving
-    while object.GuiderMoving == True or object.GuiderRunning == True:
-        time.sleep(1)
-        continue
-    image.Deconvolve(2)
+        print("unknown deconvolution method, options are RL or ME")
+        return image
+    
+    #initializing deconvolution method(Richardson-Lucy or Maximum Entropy)
+    image.Deconvolve(method_code)
     print('checkpoint 1')
     time.sleep(0.5)
-    image.SetPSF(2)
+
+    #setting the gain of the ccd camera, the rest of the noise stats are drawn from image data
+    image.SetNoise(gain)
     print('checkpoint 2')
     time.sleep(0.5)
+
+    #setting psf to be drawn from the raw image data, not fit to a gaussian or exponential
+    image.SetPSF(2)
+    print('Checkpoint 3')
+    time.sleep(0.5)
+
+    #starting the deconvolution iterations 
     image.Deconvolve(0)
     while image.IterationComplete == False:
         time.sleep(2)
         continue
-    print('Checkpoint 3')
-    image.Deconvolve(99)
-    return image, object
+    print('Initial Iterations Complete')
+    chi_sqr = image.ChiSquare
+    print(f'Chi Square value: {chi_sqr}')
+
+    #query abt continuing iterations
+    cont_q = input('Continue Iterating?(y/n):')
+    match cont_q:
+        case 'y': 
+            image.Deconvolve(0)
+            while image.IterationComplete == False:
+                time.sleep(2)
+                continue
+            print('Secondary Iterations Complete')
+            chi_new = image.ChiSquare
+            print(f'New Chi Square value: {chi_new}')
+        case 'n':
+            image.Deconvolve(99)
+    #saving the new image will have to be a new menu item
+    return image
 
 
 
