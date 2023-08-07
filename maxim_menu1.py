@@ -359,7 +359,7 @@ def save_img(image, file_name):
 
     if file_name[-3:] == 'fit' or file_name[-4:] == 'fits':
         file_path = path_str + file_name
-        image.SaveFile(file_path, 3, False)
+        image.SaveFile(file_path, 3, False, None, None) #third parameter allows autostretch
         time.sleep(0.5) #just to make sure everything has time to execute
         image.Close()
     else: #check condition to make sure it can be saved
