@@ -67,7 +67,13 @@ while session == 1:
                 case "camexpose": #take light exposure with main ccd camera
                     duration = input('Duration in s?: ') #respond in float value
                     duration = float(duration)
-                    image, object = maxim_menu1.cam_expose(object, duration)
+                    save_query = input('Save exposure?: (y/n)')
+                    match save_query:
+                        case "y":
+                            save_exposure = True
+                        case "n":
+                            save_exposure = False
+                    object = maxim_menu1.cam_expose(object, duration, save_exposure=True)
                     session = 1
                     continue
                 case "cooler": #controls the temperatures of the cooler

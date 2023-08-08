@@ -217,7 +217,7 @@ def cam_status(object):
     return object
 
 #takes a camera 1 exposure, this will be an numbered CCD Image that can be analyzed / saved
-def cam_expose(object, duration):
+def cam_expose(object, duration, save_exposure = True):
     #check link
     if object.LinkEnabled != True:
         print('Guider not connected, check if plugged in')
@@ -238,11 +238,13 @@ def cam_expose(object, duration):
         time.sleep(1)
         continue
 
-    #this is bad we might have to just reopen the saved exposure for analysis
-    image = comtypes.client.CreateObject("MaxIm.Document")
-    #object.SaveImage('Enter file path for images here, ending with image.fit')
-    print('Exposure complete, image file open to get statistics')
-    return image, object
+    if save_exposure == True:
+        file_path = input('File path for storing recent exposure?:\n')
+        object.SaveImage(file_path)
+        print(f'Exposure complete, image file saved to {file_path}')
+    else:
+        print('Exposure complete, image file open to get statistics')
+    return object
 
 #turns on the cam cooler, will take input setpoint so you  can use it as a warmer
 def cam_cooler(object):
