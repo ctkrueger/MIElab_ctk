@@ -155,7 +155,8 @@ def guidestar_coords(object):
     print(f'Guide star coords: ({x},{y})')
     return object
 
-def guider_track(object, duration):
+#turns on the tracking mode of a guider system once a guidestar is found
+def guider_track(object, duration): # duration of each exposure
     #check link
     if object.LinkEnabled != True:
         print('Guider not connected, check if plugged in')
@@ -177,6 +178,7 @@ def guider_track(object, duration):
     #check moving
     return object
 
+#stops the guider from completing its current task
 def guider_stop(object):
     #check link
     if object.LinkEnabled != True:
@@ -186,6 +188,7 @@ def guider_stop(object):
     else:
         pass
     
+    #check moving
     if object.GuiderMoving == True or object.GuiderRunning == True:
         print('Stopping guider exposure/tracking')
         object.GuiderStop()
@@ -194,6 +197,7 @@ def guider_stop(object):
         print('Guider idle, awaiting further commands')
         return object
 
+#prints a code number for the main ccd camera status, decode table in scripting manual
 def cam_status(object):
     #check link
     if object.LinkEnabled != True:
@@ -212,7 +216,7 @@ def cam_status(object):
     print(f'Camera 1 Status Code: {status}')
     return object
 
-
+#takes a camera 1 exposure, this will be an numbered CCD Image that can be analyzed / saved
 def cam_expose(object, duration):
     #check link
     if object.LinkEnabled != True:
@@ -226,17 +230,21 @@ def cam_expose(object, duration):
         time.sleep(1)
         continue
 
+    # third parameter ensures it is a light exposure and not a dark field 
     object.Expose(duration, 1, 0)
     
+    #save cpu while image is processed
     while object.ImageReady == False:
         time.sleep(1)
         continue
 
+    #this is bad we might have to just reopen the saved exposure for analysis
     image = comtypes.client.CreateObject("MaxIm.Document")
     #object.SaveImage('Enter file path for images here, ending with image.fit')
     print('Exposure complete, image file open to get statistics')
     return image, object
 
+#turns on the cam cooler, will take input setpoint so you  can use it as a warmer
 def cam_cooler(object):
     #check link
     if object.LinkEnabled != True:
@@ -259,6 +267,7 @@ def cam_cooler(object):
     
     return object
 
+#checks the current cam temperature, will only print a reasonable result while cooler on
 def cam_temp(object):
     #check link
     if object.LinkEnabled != True:
@@ -276,6 +285,8 @@ def cam_temp(object):
     print(f'Current CCD cam temp is {current_temp} degrees')
     return object
 
+#new method to utilize the cooler to warm the camera by setting the setpoint higher
+#this gradually reduces the power of the cooler rather than just shutting off
 def warm(object, setpoint):
     #check link
     if object.LinkEnabled != True:
@@ -289,10 +300,12 @@ def warm(object, setpoint):
         time.sleep(1)
         continue
 
+    #takes an input for setpoint
     print(f'Warming CCD Camera to {setpoint} degrees, do not disconnect')
     object.TemperatureSetpoint = setpoint
-    while object.Temperature <= (object.TemperatureSetpoint - 1): # to prevent exponential decay of warming as it approaches
-        time.sleep(2)  
+    # to prevent exponential decay of warming as it approaches
+    while object.Temperature <= (object.TemperatureSetpoint - 1):
+        time.sleep(5) # five seconds to reduce number of messages that print  
         print(f'Current CCD cam temp is {object.Temperature} degrees')
         continue
 
@@ -301,11 +314,12 @@ def warm(object, setpoint):
 
     return object
 
-def deconvolve(image, gain, method = 'rl'):
+#deconvolution analysis of a maxim DL document object (fits image)
+def deconvolve(image, gain, method = 'rl'): # normally using Richardson-Lucy deconvolution
     method_code = None
-    if method == 'rl':
+    if method == 'rl': # richardson-lucy, reduces chi-square
         method_code = 2
-    elif method == 'me':
+    elif method == 'me': # maximum entropy, doesnt use chi-square
         method_code = 1
     else:
         print("unknown deconvolution method, options are RL or ME")
@@ -351,6 +365,7 @@ def deconvolve(image, gain, method = 'rl'):
     #saving the new image will have to be a new menu item
     return image
 
+#saves image file in a specific local directory
 def save_img(image, file_name):
     #folder where the images will be stored
     path_str = r'c:\Users\NUC\OneDrive\Documents\SavedFITS'
@@ -359,13 +374,14 @@ def save_img(image, file_name):
 
     if file_name[-3:] == 'fit' or file_name[-4:] == 'fits':
         file_path = path_str + file_name
-        image.SaveFile(file_path, 3, False, None, None) #third parameter allows autostretch
+        image.SaveFile(file_path, 3, False, 1) #autostretch = false, FormatType = 1 (from web)
         time.sleep(0.5) #just to make sure everything has time to execute
-        image.Close()
+        # image.Close() apparently the image.SaveFile() method closes the document
     else: #check condition to make sure it can be saved
         print('incorrect file type, should end with .fits or .fit')
     return
 
+#opens file from a provided directory path, remember it has to be fits or fit
 def open_file(file_path):
     #make sure string
     file_path = str(file_path)
