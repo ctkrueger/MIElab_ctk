@@ -1,11 +1,12 @@
-# ...
+# Library for message class for socket communication
+# Used code based on https://realpython.com/python-sockets/
 import selectors 
 import struct
 import json
 import io
 import sys
 
-
+# this is where we will import the guider interface
 request_search = {
     "morpheus": "Follow the white rabbit. \U0001f430",
     "ring": "In the caves beneath the Misty Mountains. \U0001f48d",
@@ -19,10 +20,10 @@ class Message:
         self.addr = addr
         self._recv_buffer = b""
         self._send_buffer = b""
-        self._jsonheader_len = None
-        self.jsonheader = None
-        self.request = None
-        self.response_created = False
+        self._jsonheader_len = None #state variable 
+        self.jsonheader = None # state variable
+        self.request = None # state variable
+        self.response_created = False # state variable
         #...
     
     def process_events(self, mask):
@@ -47,8 +48,8 @@ class Message:
     
     def write(self):
         if self.request:
-            if not self.response_created:
-                self.create_response()
+            if not self.response_created: # STATE VARIABLE
+                self.create_response() # changes state
         
         self._write()
     
@@ -102,7 +103,8 @@ class Message:
         self._recv_buffer = self._recv_buffer[content_len:] # empty recv_buffer
         if self.jsonheader["content-type"] == "text/json": # check content encoding type
             encoding = self.jsonheader["content-encoding"] 
-            self.request = self._json_decode(data, encoding)
+            self.request = self._json_decode(data, encoding) # changes self.request
+            #some logging that may not be important
             print(f'Received request {self.request!r} from {self.addr}')
         else:
             # Binary or unknown content type
@@ -125,7 +127,7 @@ class Message:
         self._send_buffer += message 
 
     def _write(self):
-        if self._send_buffer:
+        if self._send_buffer: # if the send buffer exists
             print(f'Sending {self._send_buffer!r} to {self.addr}')
             try:
                 # Should be ready to write
@@ -136,7 +138,8 @@ class Message:
             else:
                 self._send_buffer = self._send_buffer[sent:]
                 # Close when the buffer is drained. The response has been sent
-                if sent and not self._send_buffer:
+                print('yoooooooooo')
+                if sent and not self._send_buffer: # sent exists but no longer the buffer
                     self.close()
     
     def _read(self):
@@ -189,12 +192,32 @@ class Message:
         message = message_hdr + jsonheader_bytes + content_bytes
         return message
 
+    # this could be where we initialize the guider with just 'initialize'
     def _create_response_json_content(self):
         action = self.request.get("action")
-        if action == "search":
+        if action == "search": # make this "initialize"
             query = self.request.get("value")
             answer = request_search.get(query) or f"No match for '{query}'."
             content = {"result": answer}
+        elif action == "initialize": # start maximdl / guider operations
+            # python ./guider_interface.py
+            # command: set
+            # command: calibrate
+            pass
+        elif action == "star": # expose and find star
+            duration = self.request.get("value")
+            # command: expose (duration)
+            # command: starcoords
+        elif action == "disconnect": # disconnect guider and close maximdl
+            # command: sever
+            # disconnected: y
+            pass
+        elif action == "track":
+            duration = self.request.get("value")
+            # command: track (duration)
+        elif action == "stop":
+            # command: guiderstop
+            pass
         else:
             content = {"result": f"Error: invalid action '{action}'."}
         content_encoding = "utf-8"
